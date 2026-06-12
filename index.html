@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAS Bay - Records Management Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --primary-color: #1e293b;
+            --accent-color: #0ea5e9;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            overflow-x: hidden;
+        }
+        /* Sidebar Styling */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: var(--primary-color);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        .sidebar-brand {
+            padding: 1.5rem;
+            color: #fff;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .nav-link-custom {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .nav-link-custom:hover, .nav-link-custom.active {
+            color: #fff;
+            background-color: rgba(255,255,255,0.05);
+            border-left: 4px solid var(--accent-color);
+        }
+        .nav-link-custom i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        /* Main Content Wrapper */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+        /* Dashboard Page View Management */
+        .dashboard-page {
+            display: none;
+        }
+        .dashboard-page.active-page {
+            display: block;
+        }
+        /* Responsive Mobile Tweak */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-dark bg-dark d-lg-none px-3 sticky-top">
+        <button class="navbar-toggler" type="button" onclick="toggleMobileSidebar()">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <span class="navbar-brand mb-0 h1 fs-6">OAS Bay Management</span>
+    </nav>
+
+    <div class="sidebar" id="sidebarMenu">
+        <div class="sidebar-brand d-flex align-items-center justify-content-between">
+            <span><i class="bi bi-wrench-adjustable text-info me-2"></i>OAS Bay Ltd</span>
+            <button class="btn-close btn-close-white d-lg-none" onclick="toggleMobileSidebar()"></button>
+        </div>
+        <div class="nav flex-column mt-3">
+            <a href="#" class="nav-link-custom active" onclick="switchPage('overview', this)"><i class="bi bi-speedometer2"></i> Overview</a>
+            <a href="#" class="nav-link-custom" onclick="switchPage('booking', this)"><i class="bi bi-calendar-plus"></i> New Appointment</a>
+            <a href="#" class="nav-link-custom" onclick="switchPage('customers', this)"><i class="bi bi-people"></i> Customers & Accounts</a>
+            <a href="#" class="nav-link-custom" onclick="switchPage('technicians', this)"><i class="bi bi-person-badge"></i> Technicians</a>
+            <a href="#" class="nav-link-custom" onclick="switchPage('inventory', this)"><i class="bi bi-boxes"></i> Inventory (Parts)</a>
+            <a href="#" class="nav-link-custom" onclick="switchPage('history', this)"><i class="bi bi-clock-history"></i> Service History & Bills</a>
+            <a href="#" class="nav-link-custom" onclick="switchPage('feedback', this)"><i class="bi bi-chat-left-heart"></i> Customer Feedback</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <div id="overview" class="dashboard-page active-page">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>System Overview</h2>
+                <span class="badge bg-primary p-2">Ugandan Shilling (UGX) System</span>
+            </div>
+            
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="card p-3 border-0 shadow-sm bg-white">
+                        <div class="text-muted small text-uppercase">Today's Jobs</div>
+                        <div class="fs-3 fw-bold my-1">12</div>
+                        <span class="text-success small"><i class="bi bi-arrow-up"></i> Active in bays</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3 border-0 shadow-sm bg-white">
+                        <div class="text-muted small text-uppercase">Total Technicians</div>
+                        <div class="fs-3 fw-bold my-1">8</div>
+                        <span class="text-secondary small">4 Senior Assessors</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3 border-0 shadow-sm bg-white">
+                        <div class="text-muted small text-uppercase">Low Stock Parts</div>
+                        <div class="fs-3 fw-bold my-1 text-danger">2 Items</div>
+                        <span class="text-danger small"><i class="bi bi-exclamation-triangle"></i> Reorder Engine Oil</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card p-3 border-0 shadow-sm bg-white">
+                        <div class="text-muted small text-uppercase">Estimated Revenue</div>
+                        <div class="fs-4 fw-bold my-1 text-success">1,450,000 UGX</div>
+                        <span class="text-muted small">Current month billing</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="booking" class="dashboard-page">
+            <h2 class="mb-4">Create Customer Booking & Estimate Bill</h2>
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <div class="card p-4 border-0 shadow-sm">
+                        <form id="bookingForm" oninput="calculateBill()">
+                            <h5 class="mb-3 text-secondary">Step 1: Vehicle & Schedule Info</h5>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">Car Category</label>
+                                    <select class="form-select" id="carType" required>
+                                        <option value="light">Light / Small Car</option>
+                                        <option value="heavy">Heavy Vehicle</option>
+                                        <option value="commercial">Commercial Fleet Car</option>
+                                        <option value="luxury">Luxury Premium Car</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Assign Technician</label>
+                                    <select class="form-select" id="assignedTech" required>
+                                        <option value="Tech Peter">Peter S. (Senior Assessor)</option>
+                                        <option value="Tech Alex">Alex M. (Wheel Specialist)</option>
+                                        <option value="Tech Jane">Jane N. (Heavy Engines)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Schedule Date</label>
+                                    <input type="date" class="form-select" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Preferred Time Slot</label>
+                                    <select class="form-select" required>
+                                        <option>09:00 AM - 11:00 AM</option>
+                                        <option>11:00 AM - 01:00 PM</option>
+                                        <option>02:00 PM - 04:00 PM</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <h5 class="mb-3 text-secondary">Step 2: Check Services & Parts Added</h5>
+                            <div class="mb-3">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" value="20000" id="chkLabour" checked disabled>
+                                    <label class="form-check-input-label" for="chkLabour">
+                                        Base Service Bay Labour Charge (Fixed) — 20,000 UGX
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" value="30000" id="chkAlignment">
+                                    <label class="form-check-input-label" for="chkAlignment">
+                                        Wheel Alignment Add-on — 30,000 UGX
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" value="20000" id="chkBalance">
+                                    <label class="form-check-input-label" for="chkBalance">
+                                        Wheel Balancing Add-on — 20,000 UGX
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" value="120000" id="chkOil">
+                                    <label class="form-check-input-label" for="chkOil">
+                                        Engine Oil Fill (Standard Fluid) — 120,000 UGX
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" value="18000" id="chkFilter">
+                                    <label class="form-check-input-label" for="chkFilter">
+                                        Replacement Oil Filter — 18,000 UGX
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-primary w-100 mt-3" onclick="submitBooking()">Book Appointment & Generate Record</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="col-lg-5">
+                    <div class="card p-4 border-0 shadow-sm bg-dark text-white sticky-top" style="top: 20px; z-index: 1;">
+                        <h5>Live Automated Invoice Statement</h5>
+                        <hr class="bg-secondary">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Base Labour Fee:</span>
+                            <span>20,000 UGX</span>
+                        </div>
+                        <div id="billingBreakdown" class="small text-muted mb-4">
+                            </div>
+                        <hr class="bg-secondary">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h6 mb-0 text-info">Total Bill Due:</span>
+                            <span class="h4 mb-0 text-success" id="liveTotal">20,000 UGX</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="customers" class="dashboard-page">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Customer Directory</h2>
+                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#customerModal"><i class="bi bi-person-plus"></i> Create Customer Account</button>
+            </div>
+            <div class="card border-0 shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Account Code</th>
+                                <th>Customer Name</th>
+                                <th>Contact Number</th>
+                                <th>Registered Car Type</th>
+                                <th>Plate Identity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerTableBody">
+                            <tr>
+                                <td><code>OAS-C-001</code></td>
+                                <td>Mukasa Isaac</td>
+                                <td>+256 701 234567</td>
+                                <td><span class="badge bg-warning text-dark">Luxury Premium</span></td>
+                                <td>UBL 420X (Mercedes)</td>
+                            </tr>
+                            <tr>
+                                <td><code>OAS-C-002</code></td>
+                                <td>Babirye Florence</td>
+                                <td>+256 772 987654</td>
+                                <td><span class="badge bg-secondary">Light Car</span></td>
+                                <td>UBM 881A (Toyota Vitz)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="technicians" class="dashboard-page">
+            <h2 class="mb-4">Service Station Technicians</h2>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm p-3">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary text-white p-3 rounded me-3"><i class="bi bi-person-gear fs-3"></i></div>
+                            <div>
+                                <h6 class="mb-0">Peter Ssemugenyi</h6>
+                                <small class="text-muted">Senior Assessor / Supervisor</small>
+                                <div class="badge bg-success d-block mt-1 w-50">Available</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm p-3">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-dark text-white p-3 rounded me-3"><i class="bi bi-person-gear fs-3"></i></div>
+                            <div>
+                                <h6 class="mb-0">Alex Mukiga</h6>
+                                <small class="text-muted">Wheel Alignment Specialist</small>
+                                <div class="badge bg-success d-block mt-1 w-50">Available</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm p-3">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-info text-white p-3 rounded me-3"><i class="bi bi-person-gear fs-3"></i></div>
+                            <div>
+                                <h6 class="mb-0">Jane Namubiru</h6>
+                                <small class="text-muted">Heavy Engine Tech</small>
+                                <div class="badge bg-danger d-block mt-1 w-50">In Service Bay</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="inventory" class="dashboard-page">
+            <h2 class="mb-4">Parts Stock Control Inventory</h2>
+            <div class="card border-0 shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Item Part Name</th>
+                                <th>Operational Cost Range (UGX)</th>
+                                <th>In-Stock Quantity</th>
+                                <th>Alert Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Premium Engine Oils</td>
+                                <td>79,000 - 200,000</td>
+                                <td>45 Liters</td>
+                                <td><span class="badge bg-success">Optimal</span></td>
+                            </tr>
+                            <tr>
+                                <td>Brake Fluid Bottles</td>
+                                <td>13,000 - 20,000</td>
+                                <td>4 Units</td>
+                                <td><span class="badge bg-danger">Critical Reorder</span></td>
+                            </tr>
+                            <tr>
+                                <td>Oil Filters</td>
+                                <td>15,000 - 20,000</td>
+                                <td>18 Units</td>
+                                <td><span class="badge bg-success">Optimal</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="history" class="dashboard-page">
+            <h2 class="mb-4">Closed Records & Historical Invoices</h2>
+            <div class="card border-0 shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Invoice ID</th>
+                                <th>Car Details</th>
+                                <th>Assigned Tech</th>
+                                <th>Settled Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <tr>
+                                <td><code>INV-1092</code></td>
+                                <td>Heavy Car (Isuszu Truck)</td>
+                                <td>Jane Namubiru</td>
+                                <td>168,000 UGX</td>
+                                <td><span class="badge bg-success">Paid In Full</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="feedback" class="dashboard-page">
+            <h2 class="mb-4">Customer Experience Review Panel</h2>
+            <div class="row g-4">
+                <div class="col-md-5">
+                    <div class="card p-4 border-0 shadow-sm">
+                        <h5>Leave Active Service Feedback</h5>
+                        <form id="feedbackForm" class="mt-3" onsubmit="submitFeedback(event)">
+                            <div class="mb-3">
+                                <label class="form-label">Your Registered Name</label>
+                                <input type="text" id="feedName" class="form-control" placeholder="e.g. Isaac Mukasa" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Service Rating</label>
+                                <select id="feedRating" class="form-select">
+                                    <option value="5">⭐⭐⭐⭐⭐ Excellent Bay Service</option>
+                                    <option value="4">⭐⭐⭐⭐ Good Work</option>
+                                    <option value="3">⭐⭐ Average</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Comments / Operational Feedback</label>
+                                <textarea id="feedComment" class="form-control" rows="4" placeholder="How was your billing or technician handling experience?" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-info w-100 text-white">Post Review</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="card p-4 border-0 shadow-sm">
+                        <h5>Live Feedback Board</h5>
+                        <div id="feedbackContainer" class="mt-3">
+                            <div class="border-start border-4 border-info ps-3 mb-3">
+                                <p class="mb-1 text-muted small"><strong>Florence B.</strong> rated 5 Stars</p>
+                                <p class="fst-italic">"The wheel alignment was incredibly accurate and took only 30 minutes! Honest pricing."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="customerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Register Customer Account Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newCustomerForm">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="regName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mobile Contact</label>
+                            <input type="text" class="form-control" id="regPhone" placeholder="+256..." required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Car Type</label>
+                            <select class="form-select" id="regCarType">
+                                <option value="Light Car">Light Car</option>
+                                <option value="Heavy">Heavy</option>
+                                <option value="Commercial">Commercial</option>
+                                <option value="Luxury Premium">Luxury Premium</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Number Plate / Car Brand</label>
+                            <input type="text" class="form-control" id="regPlate" placeholder="e.g. UBL 123A" required>
+                        </div>
+                        <button type="button" class="btn btn-primary w-100" onclick="registerCustomer()">Save Registration</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // 1. Sidebar Page Router Logic
+        function switchPage(pageId, element) {
+            document.querySelectorAll('.dashboard-page').forEach(page => {
+                page.classList.remove('active-page');
+            });
+            document.querySelectorAll('.nav-link-custom').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            document.getElementById(pageId).classList.add('active-page');
+            element.classList.add('active');
+
+            // Close mobile view menu layout once chosen
+            const sidebar = document.getElementById('sidebarMenu');
+            if(sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+            }
+        }
+
+        function toggleMobileSidebar() {
+            document.getElementById('sidebarMenu').classList.toggle('show');
+        }
+
+        // 2. Dynamic Billing Calculator (Processes values dynamically from the form states)
+        function calculateBill() {
+            let total = 20000; // Base Service Bay Labour Cost
+            let breakdownText = "";
+
+            if(document.getElementById('chkAlignment').checked) {
+                total += 30000;
+                breakdownText += "• Wheel Alignment: 30,000 UGX<br>";
+            }
+            if(document.getElementById('chkBalance').checked) {
+                total += 20000;
+                breakdownText += "• Wheel Balancing: 20,000 UGX<br>";
+            }
+            if(document.getElementById('chkOil').checked) {
+                total += 120000;
+                breakdownText += "• Engine Oil Change: 120,000 UGX<br>";
+            }
+            if(document.getElementById('chkFilter').checked) {
+                total += 18000;
+                breakdownText += "• New Oil Filter: 18,000 UGX<br>";
+            }
+
+            // Adjust multiplier if Luxury Car Category selected
+            if(document.getElementById('carType').value === 'luxury') {
+                total += 15000; // Custom premium markup
+                breakdownText += "<span class='text-warning'>• Luxury Vehicle Premium Markup: 15,000 UGX</span><br>";
+            }
+
+            document.getElementById('billingBreakdown').innerHTML = breakdownText || "• No extra options checked.";
+            document.getElementById('liveTotal').innerText = total.toLocaleString() + " UGX";
+        }
+
+        // 3. Simulated Transaction Execution Actions
+        function submitBooking() {
+            const finalBill = document.getElementById('liveTotal').innerText;
+            const chosenCar = document.getElementById('carType').value.toUpperCase();
+            const technician = document.getElementById('assignedTech').value;
+
+            // Prepend new row dynamically to our historical service panel
+            const tableBody = document.getElementById('historyTableBody');
+            const newRow = `<tr>
+                <td><code>INV-${Math.floor(1000 + Math.random() * 9000)}</code></td>
+                <td>${chosenCar} Category Vehicle</td>
+                <td>${technician}</td>
+                <td>${finalBill}</td>
+                <td><span class="badge bg-warning text-dark">Pending Clearance</span></td>
+            </tr>`;
+            
+            tableBody.insertAdjacentHTML('afterbegin', newRow);
+            alert("Success! Appoinment captured and synchronized down to Service History records.");
+            switchPage('history', document.querySelectorAll('.nav-link-custom')[5]);
+        }
+
+        function registerCustomer() {
+            const name = document.getElementById('regName').value;
+            const phone = document.getElementById('regPhone').value;
+            const type = document.getElementById('regCarType').value;
+            const plate = document.getElementById('regPlate').value;
+
+            if(!name || !phone || !plate) return alert("Please fill out customer details configuration");
+
+            const customerTable = document.getElementById('customerTableBody');
+            const newCustCode = `OAS-C-00${customerTable.children.length + 1}`;
+            const newRow = `<tr>
+                <td><code>${newCustCode}</code></td>
+                <td>${name}</td>
+                <td>${phone}</td>
+                <td><span class="badge bg-secondary">${type}</span></td>
+                <td>${plate}</td>
+            </tr>`;
+
+            customerTable.insertAdjacentHTML('beforeend', newRow);
+            
+            // Clean modal states
+            document.getElementById('newCustomerForm').reset();
+            const modalInstance = bootstrap.Modal.getInstance(document.getElementById('customerModal'));
+            modalInstance.hide();
+        }
+
+        function submitFeedback(event) {
+            event.preventDefault();
+            const name = document.getElementById('feedName').value;
+            const rating = document.getElementById('feedRating').value;
+            const comment = document.getElementById('feedComment').value;
+
+            const stars = "⭐".repeat(rating);
+            const feedbackContainer = document.getElementById('feedbackContainer');
+            
+            const reviewTemplate = `<div class="border-start border-4 border-info ps-3 mb-3">
+                <p class="mb-1 text-muted small"><strong>${name}</strong> rated ${stars}</p>
+                <p class="fst-italic">"${comment}"</p>
+            </div>`;
+
+            feedbackContainer.insertAdjacentHTML('afterbegin', reviewTemplate);
+            document.getElementById('feedbackForm').reset();
+        }
+    </script>
+</body>
+</html>
